@@ -65,3 +65,26 @@ jobs:
             docker compose pull
             docker compose up -d
 
+      - name: Copy new compose file via SSH
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST_SERVER }}
+          username: ${{ secrets.HOST_USER_NAME }}
+          key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
+          port: 22
+          source: "docker-compose-prod.yml"  # 关键：上传新的 compose 文件
+          target: "/home/ubuntu/frontend"
+
+      - name: Deploy on Port 9999
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ secrets.HOST_SERVER }}
+          username: ${{ secrets.HOST_USER_NAME }}
+          key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /home/ubuntu/frontend
+            docker-compose -f docker-compose-prod.yml down  # 关键：使用新文件
+            docker-compose -f docker-compose-prod.yml pull
+            docker-compose -f docker-compose-prod.yml up -d
+
