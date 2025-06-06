@@ -3,7 +3,7 @@ name: Deploy frontend application
   push:
     branches:
       - main
-      - new-feature  # 添加新分支触发
+      - new  # 添加新分支触发
 jobs:
   docker:
     runs-on: ubuntu-latest
